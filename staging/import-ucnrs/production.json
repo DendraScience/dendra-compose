@@ -1,0 +1,82 @@
+{
+  "clients": {
+    "dds": {
+      "auth": {
+        "algorithm": "sha256",
+        "password": "GOES_DDS_PASS",
+        "username": "GOES_DDS_USER"
+      },
+      "opts": {}
+    },
+    "ldmp": {
+      "opts": {
+        "host": "CSI_LDMP_HOST",
+        "port": "CSI_LDMP_PORT"
+      }
+    },
+    "stan": {
+      "client": "import-ucnrs-{key}",
+      "cluster": "test-cluster",
+      "opts": {
+        "uri": "STAN_URI"
+      }
+    }
+  },
+  "databases": {
+    "nedb": {
+      "cache": {
+        "paginate": {
+          "default": 20,
+          "max": 2000
+        },
+        "path": "/home/node/cache"
+      },
+      "state": {
+        "paginate": {
+          "default": 20,
+          "max": 2000
+        },
+        "path": "/data/state"
+      }
+    }
+  },
+  "port": 8080,
+  "tasks": {
+    "cache_grooming": null,
+    "worker": {
+      "agents": {
+        "csi_importRecords": {
+          "afterSeconds": 30,
+          "member": "importRecords",
+          "module": "@dendra-science/worker-tasks-csi",
+          "options": {
+            "interval": 500,
+            "maxExecutions": 100
+          }
+        },
+        "goes_importPast": {
+          "afterSeconds": 30,
+          "member": "importPast",
+          "module": "@dendra-science/worker-tasks-goes",
+          "options": {
+            "interval": 500,
+            "maxExecutions": 100
+          }
+        },
+        "goes_importRecent": {
+          "afterSeconds": 30,
+          "member": "importRecent",
+          "module": "@dendra-science/worker-tasks-goes",
+          "options": {
+            "interval": 500,
+            "maxExecutions": 100
+          }
+        }
+      },
+      "timerSeconds": [
+        60,
+        70
+      ]
+    }
+  }
+}

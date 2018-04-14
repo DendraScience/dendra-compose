@@ -1,0 +1,82 @@
+{
+  "clients": {
+    "influx": {
+      "database": "worker_default",
+      "host": "INFLUXDB_HOST",
+      "port": "INFLUXDB_PORT"
+    },
+    "stan": {
+      "client": "dpe-ucnrs-{key}",
+      "cluster": "test-cluster",
+      "opts": {
+        "uri": "STAN_URI"
+      }
+    }
+  },
+  "databases": {
+    "nedb": {
+      "cache": {
+        "paginate": {
+          "default": 20,
+          "max": 2000
+        },
+        "path": "/home/node/cache"
+      },
+      "state": {
+        "paginate": {
+          "default": 20,
+          "max": 2000
+        },
+        "path": "/data/state"
+      }
+    }
+  },
+  "port": 8080,
+  "tasks": {
+    "cache_grooming": null,
+    "worker": {
+      "agents": {
+        "decodePseudoBinary": {
+          "afterSeconds": 30,
+          "member": "decodePseudoBinary",
+          "module": "@dendra-science/worker-tasks-dpe",
+          "options": {
+            "interval": 500,
+            "maxExecutions": 100
+          }
+        },
+        "influxWrite": {
+          "afterSeconds": 30,
+          "member": "influxWrite",
+          "module": "@dendra-science/worker-tasks-dpe",
+          "options": {
+            "interval": 500,
+            "maxExecutions": 100
+          }
+        },
+        "patch": {
+          "afterSeconds": 30,
+          "member": "transform",
+          "module": "@dendra-science/worker-tasks-dpe",
+          "options": {
+            "interval": 500,
+            "maxExecutions": 100
+          }
+        },
+        "prep": {
+          "afterSeconds": 30,
+          "member": "transform",
+          "module": "@dendra-science/worker-tasks-dpe",
+          "options": {
+            "interval": 500,
+            "maxExecutions": 100
+          }
+        }
+      },
+      "timerSeconds": [
+        40,
+        50
+      ]
+    }
+  }
+}
