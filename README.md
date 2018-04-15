@@ -18,6 +18,7 @@ TODO: Briefly describe this repo and Project Dendra
 	```
 	$ sudo groupadd --gid 2000 dendra
   	$ sudo useradd -rm --uid 2000 --gid 2000 dendra
+  	$ sudo usermod -a -G docker dendra
 
   	$ sudo su -s /bin/bash dendra
   	$ cd ~ && mkdir Deploy && cd Deploy

@@ -1,9 +1,8 @@
-FROM nats-streaming:latest
 FROM debian:stretch
 
 MAINTAINER J. Scott Smith <scott@newleafsolutionsinc.com>
 
-COPY --from=0 /nats-streaming-server /nats-streaming-server
+COPY nats-streaming-server /usr/local/bin/nats-streaming-server
 
 RUN groupadd --gid 2000 stan \
   && useradd --uid 2000 --gid 2000 stan
@@ -13,5 +12,9 @@ VOLUME /datastore
 
 USER stan
 
-ENTRYPOINT ["/nats-streaming-server"]
+# Expose client and management ports
+EXPOSE 4222 8222
+
+# Run with file based store 
+ENTRYPOINT ["nats-streaming-server"]
 CMD ["-m", "8222", "--store", "FILE", "--dir", "datastore"]
