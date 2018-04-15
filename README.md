@@ -16,8 +16,12 @@ TODO: Briefly describe this repo and Project Dendra
 	For example:
 
 	```
-	groupadd --gid 2000 dendra \
-  	&& useradd --uid 2000 --gid 2000 dendra
+	$ sudo groupadd --gid 2000 dendra
+  	$ sudo useradd -rm --uid 2000 --gid 2000 dendra
+
+  	$ sudo su -s /bin/bash dendra
+  	$ cd ~ && mkdir Deploy && cd Deploy
+  	$ https://github.com/DendraScience/dendra-compose.git
   	```
 
 3. Start the services via `docker-compose up`.
@@ -46,7 +50,7 @@ TODO: Briefly describe this repo and Project Dendra
 
 ```
 # Clone this repo
-git clone https://github.com/dendra-science/dendra-compose.git
+git clone https://github.com/DendraScience/dendra-compose.git
 
 # Fetch latest repo changes
 git fetch origin && git reset --hard origin/master && git clean -f -d
