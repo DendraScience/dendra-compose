@@ -17,4 +17,4 @@ EXPOSE 4222 8222
 
 # Run with file based store 
 ENTRYPOINT ["nats-streaming-server"]
-CMD ["-m", "8222", "-mm", "500000", "--store", "FILE", "--dir", "datastore"]
+CMD ["-m", "8222", "-mm", "100000", "--store", "FILE", "--dir", "datastore"]
