@@ -45,6 +45,15 @@
             "interval": 500,
             "maxExecutions": 100
           }
+        },
+        "csi_importRecords_2": {
+          "afterSeconds": 30,
+          "member": "importRecords",
+          "module": "@dendra-science/worker-tasks-csi",
+          "options": {
+            "interval": 500,
+            "maxExecutions": 100
+          }
         }
       },
       "timerSeconds": [
