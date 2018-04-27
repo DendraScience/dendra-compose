@@ -216,12 +216,14 @@ services:
     image: "dendro/dendro-web-dash"
     # restart: always
     environment:
+      - NOAA_NWS_ICONS_URL
       - WEB_DASH_API_PATH
       - WEB_DASH_API_URI
   web-dash-2:
     image: "dendro/dendro-web-dash"
     # restart: always
     environment:
+      - NOAA_NWS_ICONS_URL
       - WEB_DASH_API_PATH
       - WEB_DASH_API_URI
 
