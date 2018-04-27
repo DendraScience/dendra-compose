@@ -196,7 +196,7 @@ services:
       - UCNRS_INFLUXDB_API_URL=http://influxdb-ucnrs:8086
       - LEGACY_MYSQL_URL
       - MONGO_URL=mongodb://${MONGO_DB_USER}:${MONGO_DB_PASS}@mongo:27017/${MONGO_DB_NAME}
-      - NOAA_NWS_API_URL=http://noaa-api-0:8080
+      - NOAA_NWS_API_URL=http://noaa-nws-api-0:8080
       - WEB_API_SECRET
   web-api-2:
     image: "dendra/dendra-web-api"
@@ -209,7 +209,7 @@ services:
       - UCNRS_INFLUXDB_API_URL=http://influxdb-ucnrs:8086
       - LEGACY_MYSQL_URL
       - MONGO_URL=mongodb://${MONGO_DB_USER}:${MONGO_DB_PASS}@mongo:27017/${MONGO_DB_NAME}
-      - NOAA_NWS_API_URL=http://noaa-api-0:8080
+      - NOAA_NWS_API_URL=http://noaa-nws-api-0:8080
       - WEB_API_SECRET
 
   web-dash-1:
