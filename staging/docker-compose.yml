@@ -9,8 +9,10 @@ services:
       - noaa-nws-api-0
       - web-api-1
       - web-api-2
-      - web-dash-1
-      - web-dash-2
+      - web-dash-erczo-1
+      - web-dash-erczo-2
+      - web-dash-ucnrs-1
+      - web-dash-ucnrs-2
       - web-ui-1
       - web-ui-2
     ports:
@@ -212,20 +214,43 @@ services:
       - NOAA_NWS_API_URL=http://noaa-nws-api-0:8080
       - WEB_API_SECRET
 
-  web-dash-1:
+  web-dash-erczo-1:
     image: "dendro/dendro-web-dash"
     restart: always
     environment:
       - NOAA_NWS_ICONS_URL
       - WEB_DASH_API_PATH
       - WEB_DASH_API_URI
-  web-dash-2:
+      - WEB_DASH_DOWNLOAD_ENABLED=false
+      - WEB_DASH_ORG_SLUG=erczo
+  web-dash-erczo-2:
     image: "dendro/dendro-web-dash"
     restart: always
     environment:
       - NOAA_NWS_ICONS_URL
       - WEB_DASH_API_PATH
       - WEB_DASH_API_URI
+      - WEB_DASH_DOWNLOAD_ENABLED=false
+      - WEB_DASH_ORG_SLUG=erczo
+
+  web-dash-ucnrs-1:
+    image: "dendro/dendro-web-dash"
+    restart: always
+    environment:
+      - NOAA_NWS_ICONS_URL
+      - WEB_DASH_API_PATH
+      - WEB_DASH_API_URI
+      - WEB_DASH_DOWNLOAD_ENABLED=true
+      - WEB_DASH_ORG_SLUG=ucnrs
+  web-dash-ucnrs-2:
+    image: "dendro/dendro-web-dash"
+    restart: always
+    environment:
+      - NOAA_NWS_ICONS_URL
+      - WEB_DASH_API_PATH
+      - WEB_DASH_API_URI
+      - WEB_DASH_DOWNLOAD_ENABLED=true
+      - WEB_DASH_ORG_SLUG=ucnrs
 
   web-ui-1:
     image: "dendra/dendra-web-ui"
