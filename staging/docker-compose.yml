@@ -6,7 +6,6 @@ services:
     build: ./nginx
     restart: always
     depends_on:
-      - fluentd
       - noaa-nws-api-0
       - web-api-1
       - web-api-2
@@ -19,54 +18,11 @@ services:
     ports:
       - "${WEB_ADMIN_PORT}:8088"
       - "${WEB_PORT}:80"
-    logging:
-      driver: "fluentd"
-      options:
-        fluentd-address: "localhost:${FLUENTD_PORT}"
-        tag: nginx
-
-  fluentd:
-    build: ./fluentd
-    image: "dendra:fluentd"
-    restart: always
-    depends_on:
-      - fluentd-mongo
-    ports:
-      - "${FLUENTD_PORT}:24224"
-      - "${FLUENTD_PORT}:24224/udp"
-    command: "-c /fluentd/etc/fluent.conf -p /fluentd/plugins ${FLUENTD_OPTS}"
-    environment:
-      - FLUENTD_SLACK_WEBHOOK_URL
-      - MONGO_DB_NAME=${FLUENTD_MONGO_DB_NAME}
-      - MONGO_DB_USER=${FLUENTD_MONGO_DB_USER}
-      - MONGO_DB_PASS=${FLUENTD_MONGO_DB_PASS}
-    volumes:
-      - "./fluentd/conf/${FLUENTD_CONF}:/fluentd/etc/fluent.conf"
-      - "${FLUENTD_LOG_VOLUME}"
-
-  fluentd-mongo:
-    build: ./mongo
-    image: "dendra:mongo"
-    restart: always
-    ports:
-      - "${FLUENTD_MONGO_PORT}:27017"
-    entrypoint: /auth-entrypoint.sh
-    command: mongod
-    environment:
-      - MONGO_ADMIN_USER=${FLUENTD_MONGO_ADMIN_USER}
-      - MONGO_ADMIN_PASS=${FLUENTD_MONGO_ADMIN_PASS}
-      - MONGO_DB_NAME=${FLUENTD_MONGO_DB_NAME}
-      - MONGO_DB_USER=${FLUENTD_MONGO_DB_USER}
-      - MONGO_DB_PASS=${FLUENTD_MONGO_DB_PASS}
-    volumes:
-      - "${FLUENTD_MONGO_DB_VOLUME}"
 
   influxdb-default:
     build: ./influxdb
     image: "dendra:influxdb-default"
     restart: always
-    depends_on:
-      - fluentd
     ports:
       - "${DEFAULT_INFLUXDB_PORT}:8086"
     environment:
@@ -75,18 +31,10 @@ services:
       - INFLUXDB_DATA_WAL_DIR=/influxdb/wal
     volumes:
       - "${DEFAULT_INFLUXDB_VOLUME}"
-    logging:
-      driver: "fluentd"
-      options:
-        fluentd-address: "localhost:${FLUENTD_PORT}"
-        tag: influxdb.default
-
   influxdb-erczo:
     build: ./influxdb
     image: "dendra:influxdb-erczo"
     restart: always
-    depends_on:
-      - fluentd
     ports:
       - "${ERCZO_INFLUXDB_PORT}:8086"
     environment:
@@ -95,18 +43,10 @@ services:
       - INFLUXDB_DATA_WAL_DIR=/influxdb/wal
     volumes:
       - "${ERCZO_INFLUXDB_VOLUME}"
-    logging:
-      driver: "fluentd"
-      options:
-        fluentd-address: "localhost:${FLUENTD_PORT}"
-        tag: influxdb.erczo
-
   influxdb-ucnrs:
     build: ./influxdb
     image: "dendra:influxdb-ucnrs"
     restart: always
-    depends_on:
-      - fluentd
     ports:
       - "${UCNRS_INFLUXDB_PORT}:8086"
     environment:
@@ -115,18 +55,12 @@ services:
       - INFLUXDB_DATA_WAL_DIR=/influxdb/wal
     volumes:
       - "${UCNRS_INFLUXDB_VOLUME}"
-    logging:
-      driver: "fluentd"
-      options:
-        fluentd-address: "localhost:${FLUENTD_PORT}"
-        tag: influxdb.ucnrs
 
   kapacitor:
     build: ./kapacitor
     image: "dendra:kapacitor"
     restart: always
     depends_on:
-      - fluentd
       - influxdb-default
       - influxdb-erczo
       - influxdb-ucnrs
@@ -141,18 +75,11 @@ services:
       - KAPACITOR_INFLUXDB_0_URLS_0=http://influxdb-default:8086
     volumes:
       - "${KAPACITOR_VOLUME}"
-    logging:
-      driver: "fluentd"
-      options:
-        fluentd-address: "localhost:${FLUENTD_PORT}"
-        tag: kapacitor
 
   mongo:
     build: ./mongo
     image: "dendra:mongo"
     restart: always
-    depends_on:
-      - fluentd
     ports:
       - "${MONGO_PORT}:27017"
     entrypoint: /auth-entrypoint.sh
@@ -165,72 +92,39 @@ services:
       - MONGO_DB_PASS
     volumes:
       - "${MONGO_DB_VOLUME}"
-    logging:
-      driver: "fluentd"
-      options:
-        fluentd-address: "localhost:${FLUENTD_PORT}"
-        tag: mongo
 
   mongo-migrations:
     depends_on:
-      - fluentd
       - mongo
     image: "dendra/dendra-mongo-migrations"
     environment:
       - MONGO_URL=mongodb://${MONGO_DB_USER}:${MONGO_DB_PASS}@mongo:27017/${MONGO_DB_NAME}
-    logging:
-      driver: "fluentd"
-      options:
-        fluentd-address: "localhost:${FLUENTD_PORT}"
-        tag: mongo_migrations
 
   nats-streaming:
     build: ./nats-streaming
     image: "dendra:nats-streaming"
     restart: always
-    depends_on:
-      - fluentd
     ports:
       - "${STAN_PORT}:4222"
       - "${STAN_MONITOR_PORT}:8222"
     volumes:
       - "${STAN_VOLUME}"
-    logging:
-      driver: "fluentd"
-      options:
-        fluentd-address: "localhost:${FLUENTD_PORT}"
-        tag: nats_streaming
 
   noaa-nws-api-0:
     image: "dendra/dendra-noaa-nws-api"
     restart: always
-    depends_on:
-      - fluentd
-    logging:
-      driver: "fluentd"
-      options:
-        fluentd-address: "localhost:${FLUENTD_PORT}"
-        tag: api.noaa_nws_api_0
 
   json-archive-api-1:
     image: "dendra/dendra-json-archive-api"
     restart: always
-    depends_on:
-      - fluentd
     volumes:
       - "${JSON_ARCHIVE_VOLUME}"
-    logging:
-      driver: "fluentd"
-      options:
-        fluentd-address: "localhost:${FLUENTD_PORT}"
-        tag: api.json_archive_api_1
 
   archive-worker:
     build: ./archive-worker
     image: "dendra:archive-worker"
     restart: always
     depends_on:
-      - fluentd
       - json-archive-api-1
       - nats-streaming
     environment:
@@ -238,18 +132,12 @@ services:
       - STAN_URI=http://nats-streaming:4222
     volumes:
       - "${ARCHIVE_WORKER_VOLUME}"
-    logging:
-      driver: "fluentd"
-      options:
-        fluentd-address: "localhost:${FLUENTD_PORT}"
-        tag: worker.archive_worker
 
   dpe-erczo:
     build: ./dpe-erczo
     image: "dendra:dpe-erczo"
     restart: always
     depends_on:
-      - fluentd
       - influxdb-erczo
       - nats-streaming
     environment:
@@ -258,18 +146,11 @@ services:
       - STAN_URI=http://nats-streaming:4222
     volumes:
       - "${ERCZO_DPE_WORKER_VOLUME}"
-    logging:
-      driver: "fluentd"
-      options:
-        fluentd-address: "localhost:${FLUENTD_PORT}"
-        tag: worker.dpe_erczo
-
   dpe-ucnrs:
     build: ./dpe-ucnrs
     image: "dendra:dpe-ucnrs"
     restart: always
     depends_on:
-      - fluentd
       - influxdb-ucnrs
       - nats-streaming
     environment:
@@ -278,18 +159,12 @@ services:
       - STAN_URI=http://nats-streaming:4222
     volumes:
       - "${UCNRS_DPE_WORKER_VOLUME}"
-    logging:
-      driver: "fluentd"
-      options:
-        fluentd-address: "localhost:${FLUENTD_PORT}"
-        tag: worker.dpe_ucnrs
 
   import-erczo:
     build: ./import-erczo
     image: "dendra:import-erczo"
     # /: always
     depends_on:
-      - fluentd
       - nats-streaming
     environment:
       - CSI_LDMP_HOST=${ERCZO_CSI_LDMP_HOST}
@@ -297,18 +172,11 @@ services:
       - STAN_URI=http://nats-streaming:4222
     volumes:
       - "${ERCZO_IMPORT_WORKER_VOLUME}"
-    logging:
-      driver: "fluentd"
-      options:
-        fluentd-address: "localhost:${FLUENTD_PORT}"
-        tag: worker.import_erczo
-
   import-ucnrs:
     build: ./import-ucnrs
     image: "dendra:import-ucnrs"
     restart: always
     depends_on:
-      - fluentd
       - nats-streaming
     environment:
       - CSI_LDMP_HOST=${UCNRS_CSI_LDMP_HOST}
@@ -318,17 +186,11 @@ services:
       - STAN_URI=http://nats-streaming:4222
     volumes:
       - "${UCNRS_IMPORT_WORKER_VOLUME}"
-    logging:
-      driver: "fluentd"
-      options:
-        fluentd-address: "localhost:${FLUENTD_PORT}"
-        tag: worker.import_ucnrs
 
   web-api-1:
     image: "dendra/dendra-web-api"
     restart: always
     depends_on:
-      - fluentd
       - mongo
     environment:
       - DEFAULT_INFLUXDB_API_URL=http://influxdb-default:8086
@@ -338,17 +200,10 @@ services:
       - MONGO_URL=mongodb://${MONGO_DB_USER}:${MONGO_DB_PASS}@mongo:27017/${MONGO_DB_NAME}
       - NOAA_NWS_API_URL=http://noaa-nws-api-0:8080
       - WEB_API_SECRET
-    logging:
-      driver: "fluentd"
-      options:
-        fluentd-address: "localhost:${FLUENTD_PORT}"
-        tag: api.web_api_1
-
   web-api-2:
     image: "dendra/dendra-web-api"
     restart: always
     depends_on:
-      - fluentd
       - mongo
     environment:
       - DEFAULT_INFLUXDB_API_URL=http://influxdb-default:8086
@@ -358,106 +213,56 @@ services:
       - MONGO_URL=mongodb://${MONGO_DB_USER}:${MONGO_DB_PASS}@mongo:27017/${MONGO_DB_NAME}
       - NOAA_NWS_API_URL=http://noaa-nws-api-0:8080
       - WEB_API_SECRET
-    logging:
-      driver: "fluentd"
-      options:
-        fluentd-address: "localhost:${FLUENTD_PORT}"
-        tag: api.web_api_2
 
   web-dash-erczo-1:
     image: "dendro/dendro-web-dash"
     restart: always
-    depends_on:
-      - fluentd
     environment:
       - NOAA_NWS_ICONS_URL
       - WEB_DASH_API_PATH
       - WEB_DASH_API_URI
       - WEB_DASH_DOWNLOAD_ENABLED=false
       - WEB_DASH_ORG_SLUG=erczo
-    logging:
-      driver: "fluentd"
-      options:
-        fluentd-address: "localhost:${FLUENTD_PORT}"
-        tag: app.web_dash_erczo_1
-
   web-dash-erczo-2:
     image: "dendro/dendro-web-dash"
     restart: always
-    depends_on:
-      - fluentd
     environment:
       - NOAA_NWS_ICONS_URL
       - WEB_DASH_API_PATH
       - WEB_DASH_API_URI
       - WEB_DASH_DOWNLOAD_ENABLED=false
       - WEB_DASH_ORG_SLUG=erczo
-    logging:
-      driver: "fluentd"
-      options:
-        fluentd-address: "localhost:${FLUENTD_PORT}"
-        tag: app.web_dash_erczo_2
 
   web-dash-ucnrs-1:
     image: "dendro/dendro-web-dash"
     restart: always
-    depends_on:
-      - fluentd
     environment:
       - NOAA_NWS_ICONS_URL
       - WEB_DASH_API_PATH
       - WEB_DASH_API_URI
       - WEB_DASH_DOWNLOAD_ENABLED=true
       - WEB_DASH_ORG_SLUG=ucnrs
-    logging:
-      driver: "fluentd"
-      options:
-        fluentd-address: "localhost:${FLUENTD_PORT}"
-        tag: app.web_dash_ucnrs_1
-
   web-dash-ucnrs-2:
     image: "dendro/dendro-web-dash"
     restart: always
-    depends_on:
-      - fluentd
     environment:
       - NOAA_NWS_ICONS_URL
       - WEB_DASH_API_PATH
       - WEB_DASH_API_URI
       - WEB_DASH_DOWNLOAD_ENABLED=true
       - WEB_DASH_ORG_SLUG=ucnrs
-    logging:
-      driver: "fluentd"
-      options:
-        fluentd-address: "localhost:${FLUENTD_PORT}"
-        tag: app.web_dash_ucnrs_2
 
   web-ui-1:
     image: "dendra/dendra-web-ui"
     restart: always
-    depends_on:
-      - fluentd
     environment:
       - WEB_UI_API_PATH
       - WEB_UI_API_URI=http://nginx
       - WEB_UI_CLIENT_API_URI=${WEB_UI_API_URI}
-    logging:
-      driver: "fluentd"
-      options:
-        fluentd-address: "localhost:${FLUENTD_PORT}"
-        tag: app.web_ui_1
-
   web-ui-2:
     image: "dendra/dendra-web-ui"
     restart: always
-    depends_on:
-      - fluentd
     environment:
       - WEB_UI_API_PATH
       - WEB_UI_API_URI=http://nginx
       - WEB_UI_CLIENT_API_URI=${WEB_UI_API_URI}
-    logging:
-      driver: "fluentd"
-      options:
-        fluentd-address: "localhost:${FLUENTD_PORT}"
-        tag: app.web_ui_2
