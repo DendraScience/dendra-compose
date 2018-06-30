@@ -1,0 +1,56 @@
+{
+  "clients": {
+    "ldmp": {
+      "opts": {
+        "host": "CSI_LDMP_HOST",
+        "port": "CSI_LDMP_PORT"
+      }
+    },
+    "stan": {
+      "client": "import-erczo-{key}",
+      "cluster": "test-cluster",
+      "opts": {
+        "uri": "STAN_URI"
+      }
+    }
+  },
+  "databases": {
+    "nedb": {
+      "cache": {
+        "paginate": {
+          "default": 20,
+          "max": 2000
+        },
+        "path": "/home/node/cache"
+      },
+      "state": {
+        "paginate": {
+          "default": 20,
+          "max": 2000
+        },
+        "path": "/data/state"
+      }
+    }
+  },
+  "port": 8080,
+  "tasks": {
+    "cache_grooming": null,
+    "worker": {
+      "agents": {
+        "csi_importRecords": {
+          "afterSeconds": 30,
+          "member": "importRecords",
+          "module": "@dendra-science/worker-tasks-csi",
+          "options": {
+            "interval": 500,
+            "maxExecutions": 100
+          }
+        }
+      },
+      "timerSeconds": [
+        60,
+        70
+      ]
+    }
+  }
+}

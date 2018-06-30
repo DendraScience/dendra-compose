@@ -1,0 +1,55 @@
+{
+  "clients": {
+    "stan": {
+      "client": "archive-worker-{key}",
+      "cluster": "test-cluster",
+      "opts": {
+        "uri": "STAN_URI"
+      }
+    }
+  },
+  "connections": {
+    "jsonArchive": {
+      "url": "JSON_ARCHIVE_API_URL"
+    }
+  },
+  "databases": {
+    "nedb": {
+      "cache": {
+        "paginate": {
+          "default": 20,
+          "max": 2000
+        },
+        "path": "/home/node/cache"
+      },
+      "state": {
+        "paginate": {
+          "default": 20,
+          "max": 2000
+        },
+        "path": "/data/state"
+      }
+    }
+  },
+  "port": 8080,
+  "tasks": {
+    "cache_grooming": null,
+    "worker": {
+      "agents": {
+        "archive": {
+          "afterSeconds": 30,
+          "member": "archive",
+          "module": "@dendra-science/worker-tasks-dpe",
+          "options": {
+            "interval": 500,
+            "maxExecutions": 100
+          }
+        }
+      },
+      "timerSeconds": [
+        40,
+        50
+      ]
+    }
+  }
+}
