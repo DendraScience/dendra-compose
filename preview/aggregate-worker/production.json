@@ -1,0 +1,60 @@
+{
+  "clients": {
+    "stan": {
+      "client": "STAN_CLIENT",
+      "cluster": "test-cluster",
+      "opts": {
+        "uri": "STAN_URI"
+      }
+    }
+  },
+  "connections": {
+    "aggregateStore": {
+      "url": "JSON_API_URL"
+    },
+    "web": {
+      "url": "WEB_API_URL"
+    }
+  },
+  "databases": {
+    "nedb": {
+      "cache": {
+        "autocompactionInterval": 1020000,
+        "paginate": {
+          "default": 20,
+          "max": 2000
+        },
+        "path": "/home/node/cache"
+      },
+      "state": {
+        "autocompactionInterval": 1380000,
+        "paginate": {
+          "default": 20,
+          "max": 2000
+        },
+        "path": "/data/state"
+      }
+    }
+  },
+  "port": 8080,
+  "tasks": {
+    "cache_grooming": null,
+    "worker": {
+      "agents": {
+        "archive": {
+          "afterSeconds": 30,
+          "member": "build",
+          "module": "@dendra-science/worker-tasks-agg",
+          "options": {
+            "interval": 500,
+            "maxExecutions": 100
+          }
+        }
+      },
+      "timerSeconds": [
+        40,
+        50
+      ]
+    }
+  }
+}
