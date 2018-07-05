@@ -83,13 +83,17 @@ SHH into the server instance as yourself (e.g. `user1`). You must be a 'sudoer' 
 	dendra:~/Deploy/dendra-compose/staging$ exit
 	
 	# Create the directories (example)
-	$ sudo mkdir -p /vol_b/dendra/archive/json \
+	$ sudo mkdir -p /vol_b/dendra/aggregate/db \
+	&& sudo mkdir -p /vol_b/dendra/aggregate/json \
+	&& sudo mkdir -p /vol_b/dendra/archive/json \
 	&& sudo mkdir -p /vol_b/dendra/influxdb/default \
 	&& sudo mkdir -p /vol_b/dendra/influxdb/erczo \
 	&& sudo mkdir -p /vol_b/dendra/influxdb/ucnrs \
 	&& sudo mkdir -p /vol_b/dendra/kapacitor \
 	&& sudo mkdir -p /vol_b/dendra/mongo/db \
 	&& sudo mkdir -p /vol_b/dendra/stan \
+	&& sudo mkdir -p /vol_b/dendra/worker/aggregate-1 \
+	&& sudo mkdir -p /vol_b/dendra/worker/aggregate-2 \
 	&& sudo mkdir -p /vol_b/dendra/worker/archive \
 	&& sudo mkdir -p /vol_b/dendra/worker/dpe-erczo \
 	&& sudo mkdir -p /vol_b/dendra/worker/dpe-ucnrs \
