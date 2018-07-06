@@ -41,7 +41,7 @@
     "cache_grooming": null,
     "worker": {
       "agents": {
-        "archive": {
+        "build": {
           "afterSeconds": 30,
           "member": "build",
           "module": "@dendra-science/worker-tasks-agg",
