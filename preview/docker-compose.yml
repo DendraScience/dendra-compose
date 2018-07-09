@@ -264,7 +264,7 @@ services:
       - WEB_API_SECRET
 
   web-dash-erczo-1:
-    image: "dendro/dendro-web-dash"
+    image: "dendro/dendro-web-dash:preview"
     restart: always
     environment:
       - NOAA_NWS_ICONS_URL
@@ -273,7 +273,7 @@ services:
       - WEB_DASH_DOWNLOAD_ENABLED=false
       - WEB_DASH_ORG_SLUG=erczo
   web-dash-erczo-2:
-    image: "dendro/dendro-web-dash"
+    image: "dendro/dendro-web-dash:preview"
     restart: always
     environment:
       - NOAA_NWS_ICONS_URL
@@ -283,7 +283,7 @@ services:
       - WEB_DASH_ORG_SLUG=erczo
 
   web-dash-ucnrs-1:
-    image: "dendro/dendro-web-dash"
+    image: "dendro/dendro-web-dash:preview"
     restart: always
     environment:
       - NOAA_NWS_ICONS_URL
@@ -292,7 +292,7 @@ services:
       - WEB_DASH_DOWNLOAD_ENABLED=true
       - WEB_DASH_ORG_SLUG=ucnrs
   web-dash-ucnrs-2:
-    image: "dendro/dendro-web-dash"
+    image: "dendro/dendro-web-dash:preview"
     restart: always
     environment:
       - NOAA_NWS_ICONS_URL
