@@ -1,17 +1,19 @@
 {
   "clients": {
-    "ldmp": {
-      "opts": {
-        "host": "CSI_LDMP_HOST",
-        "port": "CSI_LDMP_PORT"
-      }
-    },
     "stan": {
-      "client": "import-erczo-{key}",
+      "client": "STAN_CLIENT",
       "cluster": "test-cluster",
       "opts": {
         "uri": "STAN_URI"
       }
+    }
+  },
+  "connections": {
+    "aggregateStore": {
+      "url": "JSON_API_URL"
+    },
+    "web": {
+      "url": "WEB_API_URL"
     }
   },
   "databases": {
@@ -39,10 +41,10 @@
     "cache_grooming": null,
     "worker": {
       "agents": {
-        "csi_importRecords": {
+        "build": {
           "afterSeconds": 30,
-          "member": "importRecords",
-          "module": "@dendra-science/worker-tasks-csi",
+          "member": "build",
+          "module": "@dendra-science/worker-tasks-agg",
           "options": {
             "interval": 500,
             "maxExecutions": 100
@@ -50,8 +52,8 @@
         }
       },
       "timerSeconds": [
-        60,
-        70
+        40,
+        50
       ]
     }
   }

@@ -1,4 +1,4 @@
-FROM dendra/dendra-worker
+FROM dendra/dendra-worker:preview
 
 MAINTAINER J. Scott Smith <scott@newleafsolutionsinc.com>
 

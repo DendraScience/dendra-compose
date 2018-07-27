@@ -1,4 +1,4 @@
-FROM dendra/dendra-worker:preview
+FROM dendra/dendra-worker
 
 MAINTAINER J. Scott Smith <scott@newleafsolutionsinc.com>
 
@@ -9,7 +9,7 @@ RUN mkdir -p /data/state \
 VOLUME /data/state
 
 # Install tasks
-RUN npm install @dendra-science/worker-tasks-dpe
+RUN npm install @dendra-science/worker-tasks-agg
 
 COPY production.json /home/node/app/config
 

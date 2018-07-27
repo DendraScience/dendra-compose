@@ -187,12 +187,59 @@ services:
     volumes:
       - "${UCNRS_IMPORT_WORKER_VOLUME}"
 
+  aggregate-api-0:
+    image: "dendra/dendra-aggregate-api"
+    restart: always
+    environment:
+      - STAN_CLIENT=aggregate-api-0
+      - STAN_MAX_PUB_ACKS_IN_FLIGHT=2
+      - STAN_URI=http://nats-streaming:4222
+    volumes:
+      - "${AGGREGATE_API_VOLUME}"
+
+  aggregate-json-api-0:
+    image: "dendra/dendra-json-api-file"
+    restart: always
+    volumes:
+      - "${AGGREGATE_JSON_VOLUME}"
+
+  aggregate-worker-1:
+    build: ./aggregate-worker
+    image: "dendra:aggregate-worker"
+    restart: always
+    depends_on:
+      - aggregate-json-api-0
+      - nats-streaming
+    environment:
+      - JSON_API_URL=http://aggregate-json-api-0:8080
+      - STAN_CLIENT=aggregate-worker-1-{key}
+      - STAN_URI=http://nats-streaming:4222
+      - WEB_API_URL
+    volumes:
+      - "${AGGREGATE_WORKER_1_VOLUME}"
+  aggregate-worker-2:
+    build: ./aggregate-worker
+    image: "dendra:aggregate-worker"
+    restart: always
+    depends_on:
+      - aggregate-json-api-0
+      - nats-streaming
+    environment:
+      - JSON_API_URL=http://aggregate-json-api-0:8080
+      - STAN_CLIENT=aggregate-worker-2-{key}
+      - STAN_URI=http://nats-streaming:4222
+      - WEB_API_URL
+    volumes:
+      - "${AGGREGATE_WORKER_2_VOLUME}"
+
   web-api-1:
     image: "dendra/dendra-web-api"
     restart: always
     depends_on:
       - mongo
     environment:
+      - AGGREGATE_API_URL=http://aggregate-api-0:8080
+      - AGGREGATE_JSON_API_URL=http://aggregate-json-api-0:8080
       - DEFAULT_INFLUXDB_API_URL=http://influxdb-default:8086
       - ERCZO_INFLUXDB_API_URL=http://influxdb-erczo:8086
       - UCNRS_INFLUXDB_API_URL=http://influxdb-ucnrs:8086
@@ -206,6 +253,8 @@ services:
     depends_on:
       - mongo
     environment:
+      - AGGREGATE_API_URL=http://aggregate-api-0:8080
+      - AGGREGATE_JSON_API_URL=http://aggregate-json-api-0:8080
       - DEFAULT_INFLUXDB_API_URL=http://influxdb-default:8086
       - ERCZO_INFLUXDB_API_URL=http://influxdb-erczo:8086
       - UCNRS_INFLUXDB_API_URL=http://influxdb-ucnrs:8086

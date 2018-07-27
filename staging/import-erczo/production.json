@@ -17,6 +17,7 @@
   "databases": {
     "nedb": {
       "cache": {
+        "autocompactionInterval": 1020000,
         "paginate": {
           "default": 20,
           "max": 2000
@@ -24,6 +25,7 @@
         "path": "/home/node/cache"
       },
       "state": {
+        "autocompactionInterval": 1380000,
         "paginate": {
           "default": 20,
           "max": 2000
@@ -38,15 +40,6 @@
     "worker": {
       "agents": {
         "csi_importRecords": {
-          "afterSeconds": 30,
-          "member": "importRecords",
-          "module": "@dendra-science/worker-tasks-csi",
-          "options": {
-            "interval": 500,
-            "maxExecutions": 100
-          }
-        },
-        "csi_importRecords_2": {
           "afterSeconds": 30,
           "member": "importRecords",
           "module": "@dendra-science/worker-tasks-csi",

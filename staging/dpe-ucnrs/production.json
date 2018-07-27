@@ -16,6 +16,7 @@
   "databases": {
     "nedb": {
       "cache": {
+        "autocompactionInterval": 1020000,
         "paginate": {
           "default": 20,
           "max": 2000
@@ -23,6 +24,7 @@
         "path": "/home/node/cache"
       },
       "state": {
+        "autocompactionInterval": 1380000,
         "paginate": {
           "default": 20,
           "max": 2000
