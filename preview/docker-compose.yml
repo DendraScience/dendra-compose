@@ -1,0 +1,317 @@
+version: '2'
+
+services:
+
+  nginx:
+    build: ./nginx
+    restart: always
+    depends_on:
+      - noaa-nws-api-0
+      - web-api-1
+      - web-api-2
+      - web-dash-erczo-1
+      - web-dash-erczo-2
+      - web-dash-ucnrs-1
+      - web-dash-ucnrs-2
+      - web-ui-1
+      - web-ui-2
+    ports:
+      - "${WEB_ADMIN_PORT}:8088"
+      - "${WEB_PORT}:80"
+
+  influxdb-default:
+    build: ./influxdb
+    image: "dendra:influxdb-default"
+    restart: always
+    ports:
+      - "${DEFAULT_INFLUXDB_PORT}:8086"
+    environment:
+      - INFLUXDB_META_DIR=/influxdb/meta
+      - INFLUXDB_DATA_DIR=/influxdb/data
+      - INFLUXDB_DATA_WAL_DIR=/influxdb/wal
+    volumes:
+      - "${DEFAULT_INFLUXDB_VOLUME}"
+  influxdb-erczo:
+    build: ./influxdb
+    image: "dendra:influxdb-erczo"
+    restart: always
+    ports:
+      - "${ERCZO_INFLUXDB_PORT}:8086"
+    environment:
+      - INFLUXDB_META_DIR=/influxdb/meta
+      - INFLUXDB_DATA_DIR=/influxdb/data
+      - INFLUXDB_DATA_WAL_DIR=/influxdb/wal
+    volumes:
+      - "${ERCZO_INFLUXDB_VOLUME}"
+  influxdb-ucnrs:
+    build: ./influxdb
+    image: "dendra:influxdb-ucnrs"
+    restart: always
+    ports:
+      - "${UCNRS_INFLUXDB_PORT}:8086"
+    environment:
+      - INFLUXDB_META_DIR=/influxdb/meta
+      - INFLUXDB_DATA_DIR=/influxdb/data
+      - INFLUXDB_DATA_WAL_DIR=/influxdb/wal
+    volumes:
+      - "${UCNRS_INFLUXDB_VOLUME}"
+
+  kapacitor:
+    build: ./kapacitor
+    image: "dendra:kapacitor"
+    restart: always
+    depends_on:
+      - influxdb-default
+      - influxdb-erczo
+      - influxdb-ucnrs
+    ports:
+      - "${KAPACITOR_PORT}:9092"
+    environment:
+      - KAPACITOR_DATA_DIR=/kapacitor
+      - KAPACITOR_REPLAY_DIR=/kapacitor/replay
+      - KAPACITOR_STORAGE_BOLTDB=/kapacitor/kapacitor.db
+      - KAPACITOR_TASK_DIR=/kapacitor/tasks
+      - KAPACITOR_LOAD_DIR=/kapacitor/load
+      - KAPACITOR_INFLUXDB_0_URLS_0=http://influxdb-default:8086
+    volumes:
+      - "${KAPACITOR_VOLUME}"
+
+  mongo:
+    build: ./mongo
+    image: "dendra:mongo"
+    restart: always
+    ports:
+      - "${MONGO_PORT}:27017"
+    entrypoint: /auth-entrypoint.sh
+    command: mongod
+    environment:
+      - MONGO_ADMIN_USER
+      - MONGO_ADMIN_PASS
+      - MONGO_DB_NAME
+      - MONGO_DB_USER
+      - MONGO_DB_PASS
+    volumes:
+      - "${MONGO_DB_VOLUME}"
+
+  mongo-migrations:
+    depends_on:
+      - mongo
+    image: "dendra/dendra-mongo-migrations"
+    environment:
+      - MONGO_URL=mongodb://${MONGO_DB_USER}:${MONGO_DB_PASS}@mongo:27017/${MONGO_DB_NAME}
+
+  nats-streaming:
+    build: ./nats-streaming
+    image: "dendra:nats-streaming"
+    restart: always
+    ports:
+      - "${STAN_PORT}:4222"
+      - "${STAN_MONITOR_PORT}:8222"
+    volumes:
+      - "${STAN_VOLUME}"
+
+  noaa-nws-api-0:
+    image: "dendra/dendra-noaa-nws-api"
+    restart: always
+
+  json-archive-api-1:
+    image: "dendra/dendra-json-archive-api"
+    restart: always
+    volumes:
+      - "${JSON_ARCHIVE_VOLUME}"
+
+  archive-worker:
+    build: ./archive-worker
+    image: "dendra:archive-worker"
+    restart: always
+    depends_on:
+      - json-archive-api-1
+      - nats-streaming
+    environment:
+      - JSON_ARCHIVE_API_URL=http://json-archive-api-1:8080
+      - STAN_URI=http://nats-streaming:4222
+    volumes:
+      - "${ARCHIVE_WORKER_VOLUME}"
+
+  dpe-erczo:
+    build: ./dpe-erczo
+    image: "dendra:dpe-erczo"
+    restart: always
+    depends_on:
+      - influxdb-erczo
+      - nats-streaming
+    environment:
+      - INFLUXDB_HOST=influxdb-erczo
+      - INFLUXDB_PORT=8086
+      - STAN_URI=http://nats-streaming:4222
+    volumes:
+      - "${ERCZO_DPE_WORKER_VOLUME}"
+  dpe-ucnrs:
+    build: ./dpe-ucnrs
+    image: "dendra:dpe-ucnrs"
+    restart: always
+    depends_on:
+      - influxdb-ucnrs
+      - nats-streaming
+    environment:
+      - INFLUXDB_HOST=influxdb-ucnrs
+      - INFLUXDB_PORT=8086
+      - STAN_URI=http://nats-streaming:4222
+    volumes:
+      - "${UCNRS_DPE_WORKER_VOLUME}"
+
+  import-erczo:
+    build: ./import-erczo
+    image: "dendra:import-erczo"
+    # /: always
+    depends_on:
+      - nats-streaming
+    environment:
+      - CSI_LDMP_HOST=${ERCZO_CSI_LDMP_HOST}
+      - CSI_LDMP_PORT=${ERCZO_CSI_LDMP_PORT}
+      - STAN_URI=http://nats-streaming:4222
+    volumes:
+      - "${ERCZO_IMPORT_WORKER_VOLUME}"
+  import-ucnrs:
+    build: ./import-ucnrs
+    image: "dendra:import-ucnrs"
+    restart: always
+    depends_on:
+      - nats-streaming
+    environment:
+      - CSI_LDMP_HOST=${UCNRS_CSI_LDMP_HOST}
+      - CSI_LDMP_PORT=${UCNRS_CSI_LDMP_PORT}
+      - GOES_DDS_USER=${UCNRS_GOES_DDS_USER}
+      - GOES_DDS_PASS=${UCNRS_GOES_DDS_PASS}
+      - STAN_URI=http://nats-streaming:4222
+    volumes:
+      - "${UCNRS_IMPORT_WORKER_VOLUME}"
+
+  aggregate-api-0:
+    image: "dendra/dendra-aggregate-api:preview"
+    restart: always
+    environment:
+      - STAN_CLIENT=aggregate-api-0
+      - STAN_MAX_PUB_ACKS_IN_FLIGHT=2
+      - STAN_URI=http://nats-streaming:4222
+    volumes:
+      - "${AGGREGATE_API_VOLUME}"
+
+  aggregate-json-api-0:
+    image: "dendra/dendra-json-api-file:preview"
+    restart: always
+    volumes:
+      - "${AGGREGATE_JSON_VOLUME}"
+
+  aggregate-worker-1:
+    build: ./aggregate-worker
+    image: "dendra:aggregate-worker"
+    restart: always
+    depends_on:
+      - aggregate-json-api-0
+      - nats-streaming
+    environment:
+      - JSON_API_URL=http://aggregate-json-api-0:8080
+      - STAN_CLIENT=aggregate-worker-1-{key}
+      - STAN_URI=http://nats-streaming:4222
+      - WEB_API_URL
+    volumes:
+      - "${AGGREGATE_WORKER_1_VOLUME}"
+  aggregate-worker-2:
+    build: ./aggregate-worker
+    image: "dendra:aggregate-worker"
+    restart: always
+    depends_on:
+      - aggregate-json-api-0
+      - nats-streaming
+    environment:
+      - JSON_API_URL=http://aggregate-json-api-0:8080
+      - STAN_CLIENT=aggregate-worker-2-{key}
+      - STAN_URI=http://nats-streaming:4222
+      - WEB_API_URL
+    volumes:
+      - "${AGGREGATE_WORKER_2_VOLUME}"
+
+  web-api-1:
+    image: "dendra/dendra-web-api:preview"
+    restart: always
+    depends_on:
+      - mongo
+    environment:
+      - AGGREGATE_API_URL=http://aggregate-api-0:8080
+      - AGGREGATE_JSON_API_URL=http://aggregate-json-api-0:8080
+      - DEFAULT_INFLUXDB_API_URL=http://influxdb-default:8086
+      - ERCZO_INFLUXDB_API_URL=http://influxdb-erczo:8086
+      - UCNRS_INFLUXDB_API_URL=http://influxdb-ucnrs:8086
+      - LEGACY_MYSQL_URL
+      - MONGO_URL=mongodb://${MONGO_DB_USER}:${MONGO_DB_PASS}@mongo:27017/${MONGO_DB_NAME}
+      - NOAA_NWS_API_URL=http://noaa-nws-api-0:8080
+      - WEB_API_SECRET
+  web-api-2:
+    image: "dendra/dendra-web-api:preview"
+    restart: always
+    depends_on:
+      - mongo
+    environment:
+      - AGGREGATE_API_URL=http://aggregate-api-0:8080
+      - AGGREGATE_JSON_API_URL=http://aggregate-json-api-0:8080
+      - DEFAULT_INFLUXDB_API_URL=http://influxdb-default:8086
+      - ERCZO_INFLUXDB_API_URL=http://influxdb-erczo:8086
+      - UCNRS_INFLUXDB_API_URL=http://influxdb-ucnrs:8086
+      - LEGACY_MYSQL_URL
+      - MONGO_URL=mongodb://${MONGO_DB_USER}:${MONGO_DB_PASS}@mongo:27017/${MONGO_DB_NAME}
+      - NOAA_NWS_API_URL=http://noaa-nws-api-0:8080
+      - WEB_API_SECRET
+
+  web-dash-erczo-1:
+    image: "dendro/dendro-web-dash:preview"
+    restart: always
+    environment:
+      - NOAA_NWS_ICONS_URL
+      - WEB_DASH_API_PATH
+      - WEB_DASH_API_URI
+      - WEB_DASH_DOWNLOAD_ENABLED=false
+      - WEB_DASH_ORG_SLUG=erczo
+  web-dash-erczo-2:
+    image: "dendro/dendro-web-dash:preview"
+    restart: always
+    environment:
+      - NOAA_NWS_ICONS_URL
+      - WEB_DASH_API_PATH
+      - WEB_DASH_API_URI
+      - WEB_DASH_DOWNLOAD_ENABLED=false
+      - WEB_DASH_ORG_SLUG=erczo
+
+  web-dash-ucnrs-1:
+    image: "dendro/dendro-web-dash:preview"
+    restart: always
+    environment:
+      - NOAA_NWS_ICONS_URL
+      - WEB_DASH_API_PATH
+      - WEB_DASH_API_URI
+      - WEB_DASH_DOWNLOAD_ENABLED=true
+      - WEB_DASH_ORG_SLUG=ucnrs
+  web-dash-ucnrs-2:
+    image: "dendro/dendro-web-dash:preview"
+    restart: always
+    environment:
+      - NOAA_NWS_ICONS_URL
+      - WEB_DASH_API_PATH
+      - WEB_DASH_API_URI
+      - WEB_DASH_DOWNLOAD_ENABLED=true
+      - WEB_DASH_ORG_SLUG=ucnrs
+
+  web-ui-1:
+    image: "dendra/dendra-web-ui"
+    restart: always
+    environment:
+      - WEB_UI_API_PATH
+      - WEB_UI_API_URI=http://nginx
+      - WEB_UI_CLIENT_API_URI=${WEB_UI_API_URI}
+  web-ui-2:
+    image: "dendra/dendra-web-ui"
+    restart: always
+    environment:
+      - WEB_UI_API_PATH
+      - WEB_UI_API_URI=http://nginx
+      - WEB_UI_CLIENT_API_URI=${WEB_UI_API_URI}
