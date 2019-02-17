@@ -9,7 +9,7 @@ RUN mkdir -p /data/state \
 VOLUME /data/state
 
 # Install tasks
-RUN npm install @dendra-science/worker-tasks-dpe
+RUN npm install https://github.com/DendraScience/dendra-worker-tasks-dpe.git https://github.com/DendraScience/dendra-worker-tasks-ops.git
 
 COPY production.json /home/node/app/config
 

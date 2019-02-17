@@ -9,10 +9,12 @@
     }
   },
   "connections": {
-    "aggregateStore": {
-      "url": "JSON_API_URL"
-    },
     "web": {
+      "authenticate": {
+        "email": "WEB_API_AUTH_EMAIL",
+        "password": "WEB_API_AUTH_PASS",
+        "strategy": "local"
+      },
       "url": "WEB_API_URL"
     }
   },
@@ -44,7 +46,7 @@
         "build": {
           "afterSeconds": 50,
           "member": "build",
-          "module": "@dendra-science/worker-tasks-agg",
+          "module": "@dendra-science/worker-tasks-annot",
           "options": {
             "interval": 500,
             "maxExecutions": 100
