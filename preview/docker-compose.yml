@@ -231,8 +231,9 @@ services:
     depends_on:
       - mongo
     environment:
-      - AGGREGATE_API_URL=http://aggregate-api:8080
+      - AGGREGATE_BUILD_API_URL=http://aggregate-build-api:8080
       - AGGREGATE_JSON_API_URL=http://aggregate-json-api:8080
+      - ANNOTATION_BUILD_API_URL=http://annotation-build-api:8080
       - DEFAULT_INFLUXDB_API_URL=http://influxdb-default:8086
       - ERCZO_INFLUXDB_API_URL=http://influxdb-erczo:8086
       - UCNRS_INFLUXDB_API_URL=http://influxdb-ucnrs:8086
@@ -246,8 +247,9 @@ services:
     depends_on:
       - mongo
     environment:
-      - AGGREGATE_API_URL=http://aggregate-api:8080
+      - AGGREGATE_BUILD_API_URL=http://aggregate-build-api:8080
       - AGGREGATE_JSON_API_URL=http://aggregate-json-api:8080
+      - ANNOTATION_BUILD_API_URL=http://annotation-build-api:8080
       - DEFAULT_INFLUXDB_API_URL=http://influxdb-default:8086
       - ERCZO_INFLUXDB_API_URL=http://influxdb-erczo:8086
       - UCNRS_INFLUXDB_API_URL=http://influxdb-ucnrs:8086
