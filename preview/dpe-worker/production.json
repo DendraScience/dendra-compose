@@ -5,6 +5,11 @@
       "host": "INFLUXDB_HOST",
       "port": "INFLUXDB_PORT"
     },
+    "octokit": {
+      "auth": {
+        "token": "GITHUB_AUTH_TOKEN"
+      }
+    },
     "stan": {
       "client": "STAN_CLIENT",
       "cluster": "test-cluster",

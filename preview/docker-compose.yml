@@ -95,6 +95,7 @@ services:
       - nats-streaming
     environment:
       - DEPLOY_STATE_PATH=${DEPLOY_STATE_BASE_PATH}/core/agg/build.json
+      - GITHUB_AUTH_TOKEN
       - JSON_API_URL=http://aggregate-json-api:8080
       - STAN_CLIENT=aggregate-worker-1-{key}
       - STAN_URI=http://nats-streaming:4222
@@ -118,6 +119,7 @@ services:
       - nats-streaming
     environment:
       - DEPLOY_STATE_PATH=${DEPLOY_STATE_BASE_PATH}/core/annot/build.json
+      - GITHUB_AUTH_TOKEN
       - STAN_CLIENT=annotation-worker-1-{key}
       - STAN_URI=http://nats-streaming:4222
       - WEB_API_AUTH_EMAIL=${WORKER_WEB_API_AUTH_EMAIL}
@@ -140,6 +142,7 @@ services:
       - nats-streaming
     environment:
       - DEPLOY_STATE_PATH=${DEPLOY_STATE_BASE_PATH}/core/dpe/archive.json
+      - GITHUB_AUTH_TOKEN
       - JSON_API_URL=http://archive-json-api:8080
       - STAN_CLIENT=archive-worker-{key}
       - STAN_URI=http://nats-streaming:4222
@@ -157,6 +160,7 @@ services:
       - DEPLOY_STATE_PATH_INFLUX_WRITE=${DEPLOY_STATE_BASE_PATH}/org/erczo/dpe/influxWrite.json
       - DEPLOY_STATE_PATH_PATCH=${DEPLOY_STATE_BASE_PATH}/org/erczo/dpe/patch.json
       - DEPLOY_STATE_PATH_PREP=${DEPLOY_STATE_BASE_PATH}/org/erczo/dpe/prep.json
+      - GITHUB_AUTH_TOKEN
       - INFLUXDB_HOST=influxdb-erczo
       - INFLUXDB_PORT=8086
       - STAN_CLIENT=dpe-erczo-{key}
@@ -175,6 +179,7 @@ services:
       - DEPLOY_STATE_PATH_INFLUX_WRITE=${DEPLOY_STATE_BASE_PATH}/org/ucnrs/dpe/influxWrite.json
       - DEPLOY_STATE_PATH_PATCH=${DEPLOY_STATE_BASE_PATH}/org/ucnrs/dpe/patch.json
       - DEPLOY_STATE_PATH_PREP=${DEPLOY_STATE_BASE_PATH}/org/ucnrs/dpe/prep.json
+      - GITHUB_AUTH_TOKEN
       - INFLUXDB_HOST=influxdb-ucnrs
       - INFLUXDB_PORT=8086
       - STAN_CLIENT=dpe-ucnrs-{key}
@@ -191,6 +196,7 @@ services:
       - CSI_LDMP_HOST=${ERCZO_CSI_LDMP_HOST}
       - CSI_LDMP_PORT=${ERCZO_CSI_LDMP_PORT}
       - DEPLOY_STATE_PATH_IMPORT_RECORDS=${DEPLOY_STATE_BASE_PATH}/org/erczo/csi/importRecords.json
+      - GITHUB_AUTH_TOKEN
       - STAN_CLIENT=import-erczo-{key}
       - STAN_URI=http://nats-streaming:4222
     volumes:
@@ -207,6 +213,7 @@ services:
       - DEPLOY_STATE_PATH_IMPORT_PAST=${DEPLOY_STATE_BASE_PATH}/org/ucnrs/goes/importPast.json
       - DEPLOY_STATE_PATH_IMPORT_RECENT=${DEPLOY_STATE_BASE_PATH}/org/ucnrs/goes/importRecent.json
       - DEPLOY_STATE_PATH_IMPORT_RECORDS=${DEPLOY_STATE_BASE_PATH}/org/ucnrs/csi/importRecords.json
+      - GITHUB_AUTH_TOKEN
       - GOES_DDS_USER=${UCNRS_GOES_DDS_USER}
       - GOES_DDS_PASS=${UCNRS_GOES_DDS_PASS}
       - STAN_CLIENT=import-ucnrs-{key}

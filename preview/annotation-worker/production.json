@@ -1,5 +1,10 @@
 {
   "clients": {
+    "octokit": {
+      "auth": {
+        "token": "GITHUB_AUTH_TOKEN"
+      }
+    },
     "stan": {
       "client": "STAN_CLIENT",
       "cluster": "test-cluster",
@@ -10,7 +15,7 @@
   },
   "connections": {
     "web": {
-      "authenticate": {
+      "auth": {
         "email": "WEB_API_AUTH_EMAIL",
         "password": "WEB_API_AUTH_PASS",
         "strategy": "local"
