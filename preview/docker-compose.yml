@@ -76,6 +76,7 @@ services:
     image: "dendra/dendra-build-api:preview"
     restart: always
     environment:
+      - DISPATCH_REQUEST_SUBJECT=dendra.aggregateBuild.v1.req
       - STAN_CLIENT=aggregate-build-api
       - STAN_URI=http://nats-streaming:4222
     volumes:
@@ -107,6 +108,7 @@ services:
     image: "dendra/dendra-build-api:preview"
     restart: always
     environment:
+      - DISPATCH_REQUEST_SUBJECT=dendra.annotationBuild.v1.req
       - STAN_CLIENT=annotation-build-api
       - STAN_URI=http://nats-streaming:4222
     volumes:
