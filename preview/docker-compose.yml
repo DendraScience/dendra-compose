@@ -57,6 +57,16 @@ services:
       - ./mongo-initdb:/docker-entrypoint-initdb.d
       - "${MONGO_DB_VOLUME}"
 
+  nats-streaming:
+    build: ./nats-streaming
+    image: "dendrapreview:nats-streaming"
+    restart: always
+    ports:
+      - "${STAN_PORT}:4222"
+      - "${STAN_MONITOR_PORT}:8222"
+    volumes:
+      - "${STAN_VOLUME}"
+
   noaa-nws-api:
     image: "dendra/dendra-noaa-nws-api@sha256:f7450c6fa727c43ac94b37fdcde1acb548f969da709e0d8fa4a25fe4b5a5a5e7"
     restart: always
