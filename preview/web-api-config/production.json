@@ -1,0 +1,41 @@
+{
+  "authentication": {
+    "secret": "WEB_API_SECRET"
+  },
+  "connections": {
+    "noaaNWS": {
+      "url": "NOAA_NWS_API_URL"
+    }
+  },
+  "databases": {
+    "mongodb": {
+      "defaultLogger": {
+        "level": "error"
+      },
+      "metadata": {
+        "url": "MONGO_URL"
+      }
+    },
+    "mysql": {
+      "legacy": {
+        "url": "LEGACY_MYSQL_URL"
+      }
+    }
+  },
+  "port": 8080,
+  "services": {
+    "influx_select": {
+      "apis": {
+        "default": {
+          "url": "DEFAULT_INFLUXDB_API_URL"
+        },
+        "erczo": {
+          "url": "ERCZO_INFLUXDB_API_URL"
+        },
+        "ucnrs": {
+          "url": "UCNRS_INFLUXDB_API_URL"
+        }
+      }
+    }
+  }
+}

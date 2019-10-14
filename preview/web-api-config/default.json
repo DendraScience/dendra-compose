@@ -1,0 +1,79 @@
+{
+  "authentication": {
+    "jwt": {
+      "algorithm": "HS256",
+      "audience": "https://dendra.science",
+      "expiresIn": "14d",
+      "header": {
+        "type": "access"
+      },
+      "issuer": "feathers"
+    },
+    "local": {
+      "entity": "user",
+      "passwordField": "password",
+      "service": "users",
+      "usernameField": "email"
+    },
+    "path": "/authentication",
+    "secret": "ThYncCxLbjhin7YZBtZgda7nm0KSeT4rM0UsvpCnJXPA6sTVq6NKvsDoHjzyjkMKnB4gKDqsUx8Gg7mYsRbV9Q==",
+    "service": "users"
+  },
+  "connections": {
+    "aggregateStore": {
+      "url": "http://localhost:3036"
+    },
+    "noaaNWS": {
+      "url": "http://localhost:3032"
+    }
+  },
+  "databases": {
+    "mongodb": {
+      "defaultLogger": {
+        "level": "info"
+      },
+      "metadata": {
+        "paginate": {
+          "default": 200,
+          "max": 2000
+        },
+        "url": "mongodb://localhost:27017/dendra_playground",
+        "whitelist": [
+          "$all",
+          "$and",
+          "$exists",
+          "$in",
+          "$or",
+          "$text",
+          "$search"
+        ]
+      }
+    },
+    "mysql": {
+      "legacy": {
+        "url": "mysql://root:R0otD3v3l0per@localhost:3306/odm_local"
+      }
+    }
+  },
+  "host": "localhost",
+  "port": 3030,
+  "public": "../dist/public/",
+  "services": {
+    "datapoint": {
+      "paginate": {
+        "default": 288,
+        "max": 2016
+      }
+    },
+    "datastream_lookup": {
+      "limit": 100
+    },
+    "influx_select": {
+      "apis": {
+        "default": {
+          "url": "http://localhost:8086"
+        }
+      }
+    }
+  }
+}

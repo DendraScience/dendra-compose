@@ -86,3 +86,5 @@ services:
       - MONGO_URL=mongodb://${MONGO_APPDB_USERNAME}:${MONGO_APPDB_PASSWORD}@mongo:27017/${MONGO_APPDB_DATABASE}
       - NOAA_NWS_API_URL=http://noaa-nws-api:8080
       - WEB_API_SECRET
+    volumes:
+      - ./web-api-config:/home/node/app/config
