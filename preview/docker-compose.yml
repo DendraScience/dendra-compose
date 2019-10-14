@@ -71,7 +71,7 @@ services:
     restart: always
 
   web-api:
-    image: "dendra/dendra-web-api@sha256:a8fad3b7bae898af4ea4886e1cfcb0b43d866aec6bdac611cae5ca90678bfc49"
+    image: "dendra/dendra-web-api:preview"
     restart: always
     depends_on:
       - mongo
