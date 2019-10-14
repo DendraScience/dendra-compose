@@ -1,4 +1,4 @@
-FROM influxdb:1.5.1
+FROM influxdb:1.7
 
 MAINTAINER J. Scott Smith <scott@newleafsolutionsinc.com>
 
