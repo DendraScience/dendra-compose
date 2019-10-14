@@ -9,7 +9,6 @@ services:
     depends_on:
       - noaa-nws-api
       - web-api
-      - web-ui
     ports:
       - "${WEB_ADMIN_PORT}:8088"
       - "${WEB_PORT}:80"
